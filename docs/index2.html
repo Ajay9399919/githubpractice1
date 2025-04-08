@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Clone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="music-player">
+            <nav>
+                <div class="circle">
+                    <i class="fas fa-angle-left"></i>
+                </div>
+                <div class="circle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+            <img src="media/girl.jpg" alt="Girl listening to music" class="song-img">
+            <h1 id="song-title">Despacito</h1>
+            <p id="song-artist">Lois Fonsi ft. Puerto Rican</p>
+            <audio id="song">
+                <source src="media/Despacito---Luis-Fonsi-Ringtones(PagalNew.Com.Se).mp3" type="audio/mp3">
+                <source src="media/background.mp3" type="audio/mp3">
+            </audio>
+            <label for="progress" class="visually-hidden">Progress</label>
+            <input type="range" value="0" id="progress" title="Progress">
+
+            <div class="controls">
+                <div>
+                    <i class="fas fa-backward" onclick="prevSong()"></i>
+                    <i onclick="playpause()" class="fas fa-play" id="ctrlIcon"></i>
+                    <i class="fas fa-forward" onclick="nextSong()"></i>
+                </div>
+            </div>
+            <div class="song-list">
+                <ul id="song-list">
+                    <li onclick="selectSong(0)">Despacito - Lois Fonsi ft. Puerto Rican</li>
+                    <li onclick="selectSong(1)">Song 2 - Artist 2</li>
+                    <li onclick="selectSong(2)">Song 3 - Artist 3</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        let progress = document.getElementById("progress");
+        let song = document.getElementById("song");
+        let ctrlIcon = document.getElementById("ctrlIcon");
+        let songTitle = document.getElementById("song-title");
+        let songArtist = document.getElementById("song-artist");
+
+        const songs = [
+            {
+                title: "Despacito",
+                artist: "Lois Fonsi ft. Puerto Rican",
+                src: "media/Despacito---Luis-Fonsi-Ringtones(PagalNew.Com.Se).mp3"
+            },
+            {
+                title: "Song 2",
+                artist: "Artist 2",
+                src: "media/song2.mp3"
+            },
+            {
+                title: "Song 3",
+                artist: "Artist 3",
+                src: "media/song3.mp3"
+            }
+        ];
+
+        let currentSongIndex = 0;
+
+        function loadSong(index) {
+            songTitle.textContent = songs[index].title;
+            songArtist.textContent = songs[index].artist;
+            song.src = songs[index].src;
+            song.load();
+            playpause();
+        }
+
+        song.onloadedmetadata = function() {
+            progress.max = song.duration;
+            progress.value = song.currentTime;
+        };
+
+        function playpause() {
+            if (ctrlIcon.classList.contains("fa-pause")) {
+                song.pause();
+                ctrlIcon.classList.remove("fa-pause");
+                ctrlIcon.classList.add("fa-play");
+            } else {
+                song.play();
+                ctrlIcon.classList.add("fa-pause");
+                ctrlIcon.classList.remove("fa-play");
+            }
+        }
+
+        song.addEventListener('play', () => {
+            setInterval(() => {
+                progress.value = song.currentTime;
+            }, 500);
+        });
+
+        progress.onchange = function() {
+            song.currentTime = progress.value;
+            song.play();
+            ctrlIcon.classList.add("fa-pause");
+            ctrlIcon.classList.remove("fa-play");
+        };
+
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+        }
+
+        function selectSong(index) {
+            currentSongIndex = index;
+            loadSong(currentSongIndex);
+        }
+
+        // Load the first song initially
+        loadSong(currentSongIndex);
+    </script>
+</body>
+</html>
